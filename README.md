@@ -6,11 +6,11 @@ Aplikasi berbasis web untuk mengelola stok bahan baku restoran menggunakan metod
 
 - **Manajemen Master Data Produk:** Pencatatan bahan baku dengan kode barang unik (contoh: `001` untuk Ayam).
 - **Inbound (Barang Masuk):** Pencatatan stok masuk berdasarkan Tanggal Produksi dan Sesi (Pagi/Siang).
-- **Auto-Generate Barcode:** Sistem secara otomatis membuat barcode unik untuk setiap *batch* barang masuk dengan format:
+- **Auto-Generate Barcode:** Sistem secara otomatis membuat barcode unik untuk setiap _batch_ barang masuk dengan format:
   `[Kode Barang 3 digit] + [Tanggal dmyyyy] + [Sesi 01/02] + [Qty]`
-  *(Contoh: `001010320260150`)*
-- **Kasir / Scanner Checkout:** Halaman khusus antarmuka *Point of Sale* yang mendukung input dari *Barcode Scanner* fisik untuk proses pengeluaran barang secara instan.
-- **Logika Cerdas FIFO:** Saat pengeluaran barang, sistem otomatis memotong stok dari *batch* paling tua. Jika stok *batch* tertua tidak cukup, sistem akan otomatis memotong sisa kekurangannya dari *batch* tertua berikutnya.
+  _(Contoh: `001010320260150`)_
+- **Kasir / Scanner Checkout:** Halaman khusus antarmuka _Point of Sale_ yang mendukung input dari _Barcode Scanner_ fisik untuk proses pengeluaran barang secara instan.
+- **Logika Cerdas FIFO:** Saat pengeluaran barang, sistem otomatis memotong stok dari _batch_ paling tua. Jika stok _batch_ tertua tidak cukup, sistem akan otomatis memotong sisa kekurangannya dari _batch_ tertua berikutnya.
 - **Multi-Bahasa (Localization):** Mendukung pergantian bahasa antarmuka (contoh: Indonesia & Inggris) menggunakan plugin terintegrasi.
 
 ## 🛠️ Teknologi yang Digunakan
@@ -23,6 +23,7 @@ Aplikasi berbasis web untuk mengelola stok bahan baku restoran menggunakan metod
 ## 📋 Prasyarat Sistem
 
 Pastikan perangkat lunak berikut sudah terinstal di komputermu:
+
 - PHP >= 8.2
 - Composer
 - Node.js & NPM
@@ -33,6 +34,52 @@ Pastikan perangkat lunak berikut sudah terinstal di komputermu:
 Ikuti langkah-langkah berikut untuk menjalankan project ini di komputermu:
 
 1. **Clone Repository**
-   ```bash
-   git clone <url-repository-kamu>
-   cd <nama-folder-project>
+
+    ```bash
+    git clone <url-repository-kamu>
+    cd <nama-folder-project>
+    ```
+
+2. **Install Dependencies (PHP & Node)**
+
+    ```bash
+    composer install
+    npm install && npm run build
+    ```
+
+3. **Konfigurasi Environment**
+    ```bash
+    cp .env.example .env
+    ```
+
+4. **Generate Application Key**
+    ```bash
+    php artisan key:generate
+    ```
+
+5. ***Jalankan Migrasi Database**
+    ```bash
+    php artisan migrate --seed
+    ```
+
+6. **Jalankan Local Server**
+    ```bash
+    php artisan serve
+    ```
+
+Aplikasi sekarang dapat diakses melalui browser di: http://localhost:8000/admin
+
+📖 Alur Kerja Sistem (Workflow)
+
+  1. Admin mendaftarkan master data bahan baku di menu Produk.
+
+  2. Saat ada barang dari supplier, Admin membuka detail Produk dan menambah data di Riwayat Barang Masuk (Inbound). Barcode akan tercipta otomatis.
+
+  3. Saat Dapur membutuhkan bahan, Dapur membawa barang tersebut ke Admin.
+
+  4. Admin membuka menu Kasir / Checkout, lalu melakukan scan barcode pada barang tersebut.
+
+  5. Sistem memproses transaksi dan secara otomatis mengurangi stok sisa (qty_remaining) di database dengan algoritma FIFO.
+
+---
+Dibuat dengan ❤️ menggunakan Laravel & Filament.
