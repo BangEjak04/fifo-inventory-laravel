@@ -36,8 +36,8 @@ Ikuti langkah-langkah berikut untuk menjalankan project ini di komputermu:
 1. **Clone Repository**
 
     ```bash
-    git clone <url-repository-kamu>
-    cd <nama-folder-project>
+    git clone https://github.com/BangEjak04/fifo-inventory-laravel.git
+    cd fifo-inventory-laravel
     ```
 
 2. **Install Dependencies (PHP & Node)**
@@ -67,7 +67,7 @@ Ikuti langkah-langkah berikut untuk menjalankan project ini di komputermu:
     php artisan serve
     ```
 
-Aplikasi sekarang dapat diakses melalui browser di: http://localhost:8000/admin
+Aplikasi sekarang dapat diakses melalui browser di: http://localhost:8000/app
 
 📖 Alur Kerja Sistem (Workflow)
 
