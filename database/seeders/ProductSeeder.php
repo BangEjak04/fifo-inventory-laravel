@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
         Product::factory()->create([
             'name' => 'Ayam Potong',
             'code' => 'AYAM',
-            'type' => 'Kering',
+            'type' => 'dry',
         ]);
     }
 }

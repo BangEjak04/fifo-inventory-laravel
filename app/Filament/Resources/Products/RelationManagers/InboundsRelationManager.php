@@ -101,10 +101,12 @@ class InboundsRelationManager extends RelationManager
                 TextColumn::make('quantity_in')
                     ->label(__('product.inbound.columns.quantity_in'))
                     ->numeric()
+                    ->badge()
                     ->sortable(),
                 TextColumn::make('quantity_remaining')
                     ->label(__('product.inbound.columns.quantity_remaining'))
                     ->numeric()
+                    ->badge()
                     ->sortable(),
                 TextColumn::make('barcode')
                     ->label(__('product.inbound.columns.barcode'))

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\ProductionSession;
+use App\Models\ProductInbound;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,14 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_inbounds', function (Blueprint $table) {
+        Schema::create('product_outbounds', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(App\Models\Product::class)->constrained()->cascadeOnDelete();
-            $table->date('production_date');
-            $table->enum('session', ProductionSession::cases());
+            $table->foreignIdFor(ProductInbound::class)->constrained()->cascadeOnDelete();
             $table->integer('quantity_in');
-            $table->integer('quantity_remaining');
-            $table->string('barcode')->unique();
+            $table->date('outbound_date');
             $table->timestamps();
         });
     }
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_inbounds');
+        Schema::dropIfExists('product_outbounds');
     }
 };

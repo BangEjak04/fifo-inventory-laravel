@@ -88,7 +88,8 @@ class Checkout extends Page implements HasSchemas
                             ])
                             ->columns(3)
                             ->defaultItems(0)
-                            ->reorderable(false),
+                            ->reorderable(false)
+                            ->addable(false),
                     ]),
             ])
             ->statePath('cart');
