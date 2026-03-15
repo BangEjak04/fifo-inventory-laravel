@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('code')->unique();
             $table->string('type');
+            $table->integer('min_stock')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

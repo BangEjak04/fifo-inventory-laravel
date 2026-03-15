@@ -28,6 +28,7 @@ return [
         ],
         'columns' => [
             'production_date' => 'Tanggal produksi',
+            'expired_date' => 'Tanggal kadaluarsa',
             'session' => 'Sesi',
             'quantity_in' => 'Jumlah stok',
             'quantity_remaining' => 'Sisa stok',
@@ -39,5 +40,28 @@ return [
                 'afternoon' => 'Siang',
             ],
         ],
+    ],
+
+    'request' => [
+        'model' => [
+            'label' => 'Permintaan',
+        ],
+        'columns' => [
+            'type' => 'Jenis',
+        ],
+        'enums' => [
+            'type' => [
+                'sale' => 'Penjualan',
+                'return' => 'Pengembalian',
+                'remove' => 'Penghapusan',
+            ],
+        ],
+            'status' => [
+                'draft' => 'Draf',
+                'approved' => 'Disetujui',
+                'processing' => 'Diproses',
+                'completed' => 'Selesai',
+                'cancelled' => 'Dibatalkan',
+            ],
     ],
 ];

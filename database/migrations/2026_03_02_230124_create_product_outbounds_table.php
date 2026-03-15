@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ProductInbound;
+use App\Models\ProductRequestItem;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('product_outbounds', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(ProductRequestItem::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(ProductInbound::class)->constrained()->cascadeOnDelete();
-            $table->integer('quantity_in');
+            $table->integer('quantity_out');
             $table->date('outbound_date');
             $table->timestamps();
         });

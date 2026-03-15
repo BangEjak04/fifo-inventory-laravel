@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Products\RelationManagers;
 
 use App\Enums\ProductionSession;
 use Carbon\Carbon;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
@@ -18,11 +20,15 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
+use Milon\Barcode\DNS1D;
 
 class InboundsRelationManager extends RelationManager
 {
@@ -46,6 +52,10 @@ class InboundsRelationManager extends RelationManager
                     ->label(__('product.inbound.columns.production_date'))
                     ->default(now())
                     ->required(),
+                DatePicker::make('expired_date')
+                    ->label(__('product.inbound.columns.expired_date'))
+                    ->default(now()->addDays(30))
+                    ->required(),
                 Select::make('session')
                     ->label(__('product.inbound.columns.session'))
                     ->options(ProductionSession::class)
@@ -53,7 +63,8 @@ class InboundsRelationManager extends RelationManager
                 TextInput::make('quantity_in')
                     ->label(__('product.inbound.columns.quantity_in'))
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->disabledOn('edit'),
             ]);
     }
 
@@ -63,7 +74,9 @@ class InboundsRelationManager extends RelationManager
             ->components([
                 TextEntry::make('production_date')
                     ->label(__('product.inbound.columns.production_date'))
-                    // ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->translatedFormat('d F Y') : '-')
+                    ->date(),
+                TextEntry::make('expired_date')
+                    ->label(__('product.inbound.columns.expired_date'))
                     ->date(),
                 TextEntry::make('session')
                     ->label(__('product.inbound.columns.session')),
@@ -74,7 +87,12 @@ class InboundsRelationManager extends RelationManager
                     ->label(__('product.inbound.columns.quantity_remaining'))
                     ->numeric(),
                 TextEntry::make('barcode')
-                    ->label(__('product.inbound.columns.barcode')),
+                    ->label(__('product.inbound.columns.barcode'))
+                    ->html()
+                    ->state(fn ($record) => $record->barcode
+                        ? new HtmlString((new DNS1D)->getBarcodeSVG($record->barcode, 'C128', 2, 60, 'currentColor'))
+                        : '-'
+                    ),
                 TextEntry::make('created_at')
                     ->label(__('product.columns.created_at'))
                     ->dateTime()
@@ -95,6 +113,12 @@ class InboundsRelationManager extends RelationManager
                     ->label(__('product.inbound.columns.production_date'))
                     ->date()
                     ->sortable(),
+                TextColumn::make('expired_date')
+                    ->label(__('product.inbound.columns.expired_date'))
+                    ->date()
+                    ->formatStateUsing(fn ($state) => Carbon::parse($state)->diffForHumans())
+                    ->color(fn ($state) => Carbon::parse($state)->isPast() ? 'danger' : 'success')
+                    ->sortable(),
                 TextColumn::make('session')
                     ->label(__('product.inbound.columns.session'))
                     ->searchable(),
@@ -108,9 +132,13 @@ class InboundsRelationManager extends RelationManager
                     ->numeric()
                     ->badge()
                     ->sortable(),
-                TextColumn::make('barcode')
+                ImageColumn::make('barcode')
                     ->label(__('product.inbound.columns.barcode'))
-                    ->searchable(),
+                    ->getStateUsing(fn ($record) => $record->barcode
+                        ? 'data:image/svg+xml;base64,'.base64_encode((new DNS1D)->getBarcodeSVG($record->barcode, 'C128', 2, 40, 'black'))
+                        : null
+                    )
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('product.columns.created_at'))
                     ->dateTime()
@@ -147,13 +175,33 @@ class InboundsRelationManager extends RelationManager
                     EditAction::make(),
                     // DissociateAction::make(),
                     DeleteAction::make(),
+                    Action::make('download_barcode')
+                        ->icon(LucideIcon::Download)
+                        ->action(function ($record) {
+                            if (! $record->barcode) {
+                                Notification::make()
+                                    ->title('Barcode tidak tersedia')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            $svg = (new DNS1D)->getBarcodeSVG($record->barcode, 'C128', 2, 60, 'black');
+
+                            return response()->streamDownload(function () use ($svg) {
+                                echo $svg;
+                            }, $record->barcode.'.svg', [
+                                'Content-Type' => 'image/svg+xml',
+                            ]);
+                        }),
                 ]),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DissociateBulkAction::make(),
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+                                BulkActionGroup::make([
+                                    DissociateBulkAction::make(),
+                                    DeleteBulkAction::make(),
+                                ]),
+                            ]);
     }
 }

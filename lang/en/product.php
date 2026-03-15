@@ -28,6 +28,7 @@ return [
         ],
         'columns' => [
             'production_date' => 'Production date',
+            'expired_date' => 'Expired date',
             'session' => 'Session',
             'quantity_in' => 'Stock amount',
             'quantity_remaining' => 'Remaining stock',
@@ -37,6 +38,29 @@ return [
             'session' => [
                 'morning' => 'Morning',
                 'afternoon' => 'Afternoon',
+            ],
+        ],
+    ],
+
+    'request' => [
+        'model' => [
+            'label' => 'Request',
+        ],
+        'columns' => [
+            'type' => 'Type',
+        ],
+        'enums' => [
+            'type' => [
+                'sale' => 'Sale',
+                'return' => 'Return',
+                'remove' => 'Remove',
+            ],
+            'status' => [
+                'draft' => 'Draft',
+                'approved' => 'Approved',
+                'processing' => 'Processing',
+                'completed' => 'Completed',
+                'cancelled' => 'Cancelled',
             ],
         ],
     ],

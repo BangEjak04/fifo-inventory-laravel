@@ -15,10 +15,16 @@ class Product extends Model
         'name',
         'code',
         'type',
+        'is_active'
     ];
 
     public function inbounds(): HasMany
     {
         return $this->hasMany(ProductInbound::class);
+    }
+
+    public function requestItems(): HasMany
+    {
+        return $this->hasMany(ProductRequestItem::class);
     }
 }
